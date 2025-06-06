@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can we be together? 🐱</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .cat-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 15px;
+            margin: 20px auto;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .cat-image:hover {
+            transform: scale(1.05);
+        }
+
+        .question {
+            font-size: 28px;
+            color: #d63384;
+            margin: 30px 0;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-yes {
+            background: #28a745;
+            color: white;
+            min-width: 100px;
+        }
+
+        .btn-yes:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-no {
+            background: #dc3545;
+            color: white;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .btn-no:hover {
+            background: #c82333;
+        }
+
+        .emoji {
+            font-size: 40px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff69b4;
+            font-size: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .success-message {
+            display: none;
+            font-size: 24px;
+            color: #28a745;
+            margin-top: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .phase-transition {
+            display: none;
+            font-size: 22px;
+            color: #6f42c1;
+            margin-top: 20px;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* New styles for random floating images */
+        .floating-image {
+            position: fixed;
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 5;
+            pointer-events: none;
+            animation: floatAround 4s ease-in-out;
+        }
+
+        @keyframes floatAround {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            20% {
+                opacity: 1;
+                transform: scale(1) rotate(180deg);
+            }
+            80% {
+                opacity: 1;
+                transform: scale(1) rotate(360deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0) rotate(540deg);
+            }
+        }
+
+        /* New persistent image styles */
+        .persistent-image {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            z-index: 3;
+            pointer-events: none;
+            animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(-180deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(0deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .random-text {
+            position: fixed;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff1493;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            z-index: 6;
+            pointer-events: none;
+            animation: textFloat 3s ease-in-out;
+        }
+
+        @keyframes textFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-10px) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40px) scale(0.8);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="backgroundMusic" loop>
+    <source src="bgm/bumalikkanasakin.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+
+
+    <div class="container">
+        <div class="hearts" id="hearts"></div>
+        
+        <div class="emoji" id="emoji">😿</div>
+        
+        <div class="cat-image" id="catImage"></div>
+
+        <div class="question" id="question">Maaari pa ba akong bumalik sa buhay mo at magsimula tayong muli? 💔</div>
+        
+        <div class="buttons" id="buttons">
+            <button class="btn btn-yes" onclick="handleYes()">Yes! 💖</button>
+            <button class="btn btn-no" id="noBtn" onclick="handleNo()">No</button>
+        </div>
+        
+        <div class="phase-transition" id="phaseTransition">
+            Yeyyyy! May isa pa akong tanong sana mapagbigyan... 🙇🧎
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA🎉💕<br>
+             🥰🥳😍😽😻🫦🫶👅😚🤩😻<br><br>
+            <div style="font-size: 20px; color: #ff69b4; margin-top: 15px;">
+                Kita tayo sa June 08, 2025! :D 💕<br>
+                <small style="font-size: 16px;">Sana hindi malimutan 🙏😾😿👍</small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPhase = 1; // 1 = "Can we be together", 2 = "Will you be my date"
+        let noClickCount = 0;
+        let moveCount = 0;
+        let isButtonExhausted = false; // Flag to track when we've exhausted responses
+        
+        // Phase 1 responses (Can we be together?) - Add your image paths here
+        const phase1Responses = [
+            { emoji: '😿', text: 'No', question: 'Can we still be together and start again? 💔', image: 'images/c1.jpg' },
+            { emoji: '😢', text: 'Are you sure?', question: 'I miss what we had... 💭', image: 'images/c11.jpg' },
+            { emoji: '😭', text: 'Please think about it?', question: 'We were so good together! 💕', image: 'images/a2.jpg' },
+            { emoji: '🥺', text: 'One more chance?', question: 'I promise I\'ll be better! 🙏', image: 'images/c4.jpg' },
+            { emoji: '😰', text: 'Don\'t give up on us!', question: 'We can work through this! 😎💪', image: 'images/c12.jpg' },
+            { emoji: '😱', text: 'I can\'t lose you!', question: 'You mean everything to me! 💖', image: 'images/c3.jpg' },
+            { emoji: '🤧', text: 'I\'m begging you...', question: 'Please don\'t walk away! 🚶‍♀️💔', image: 'images/c8.jpg' },
+            { emoji: '😵', text: 'I won\'t accept no!', question: 'No! I won\'t accept your no! We\'re starting over! 🔄', image: 'images/c15.jpg' }
+        ];
+
+        // Phase 2 responses (Will you be my date?) - Add your image paths here
+        const phase2Responses = [
+            { emoji: '😿', text: 'No', question: 'Puwede ka bang maayang ̶m̶a̶g̶-̶d̶a̶t̶e̶  kumain ng dinner sa labas? 💔', image: 'images/c1.jpg' },
+            { emoji: '😢', text: 'Are you sure?', question: 'Please? Please?', image: 'images/c2.jpg' },
+            { emoji: '😭', text: 'Please please?', question: 'I\'ll be a good date', image: 'images/c3.jpg' },
+            { emoji: '🥺', text: 'Pretty please?', question: 'Look at these puppy... er, kitty eyes!', image: 'images/c6.jpg' },
+            { emoji: '😰', text: 'Don\'t do this to me!', question: 'My heart is breaking! 💔', image: 'images/c5.jpg' },
+            { emoji: '😱', text: 'You\'re breaking my heart!', question: 'I\'ll cry for years! 😭', image: 'images/c4.jpg' },
+            { emoji: '🤧', text: 'I\'m gonna cry...', question: 'Just one tiny little yes?', image: 'images/c7.jpg' },
+            { emoji: '😵', text: 'No!', question: 'awts pain pighati lumbay hinagpis kirot sakit iyak lungkot naging sadboi kasalanan ko naman ang lahat e', image: 'images/a6.jpg' }
+        ];
+
+        // Array of random images for floating effect
+        const randomImages = [
+            'images/c14.jpg', 'images/a5.jpg', 'images/c15.jpg', 'images/c16.jpg',
+            'images/a4.jpg', 'images/c17.jpg', 'images/a3.jpg', 'images/c18.jpg',
+            'images/c19.jpg', 'images/a1.jpg', 'images/c20.jpg'
+        ];
+
+        // Array of random pleading texts
+        const randomTexts = [
+            "Please! 🥺", "Don't go! 😭", "I love you! 💕", "Come back! 🙏",
+            "Pretty please! 🥹", "Just one yes! 💖", "Please reconsider! 😿",
+            "Don't leave me! 💔", "I need you! 😢", "One chance! 🙂",
+            "Please please! 🤧", "I'm begging! 😰", "Don't say no! 😱"
+        ];
+
+        // Set initial image
+        function setInitialImage() {
+            const catImage = document.getElementById('catImage');
+            catImage.style.backgroundImage = 'url("images/c10.jpg")';
+        }
+
+        function handleYes() {
+            if (currentPhase === 1) {
+                // Transition to Phase 2
+                document.getElementById('phaseTransition').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('phaseTransition').style.display = 'none';
+                    startPhase2();
+                }, 6000);
+            } else if (currentPhase === 2) {
+                // Final success
+                document.getElementById('buttons').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('emoji').textContent = '😻';
+                document.getElementById('question').textContent = 'YESYESYESYESAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+                
+                createHeartRain();
+                
+                // Change to happy cat - replace with your happy cat image
+                const catImage = document.getElementById('catImage');
+                catImage.style.backgroundImage = 'url("images/a7.jpg")';
+            }
+        }
+
+        function createFloatingImage() {
+            const floatingImg = document.createElement('div');
+            floatingImg.className = 'floating-image';
+            
+            // Random image from the array
+            const randomImage = randomImages[Math.floor(Math.random() * randomImages.length)];
+            floatingImg.style.backgroundImage = `url("${randomImage}")`;
+            
+            // Random position on screen
+            floatingImg.style.left = Math.random() * (window.innerWidth - 80) + 'px';
+            floatingImg.style.top = Math.random() * (window.innerHeight - 80) + 'px';
+            
+            // Add to body
+            document.body.appendChild(floatingImg);
+            
+            // Remove after animation
+            setTimeout(() => {
+                if (floatingImg.parentNode) {
+                    floatingImg.parentNode.removeChild(floatingImg);
+                }
+            }, 4000);
+        }
+
+        function createPersistentImage() {
+            const persistentImg = document.createElement('div');
+            persistentImg.className = 'persistent-image';
+            
+            // Random image from the array
+            const randomImage = randomImages[Math.floor(Math.random() * randomImages.length)];
+            persistentImg.style.backgroundImage = `url("${randomImage}")`;
+            
+            // Random position on screen (but avoid the center area where the main container is)
+            let left, top;
+            do {
+                left = Math.random() * (window.innerWidth - 100);
+                top = Math.random() * (window.innerHeight - 100);
+            } while (
+                left > window.innerWidth * 0.2 && left < window.innerWidth * 0.8 &&
+                top > window.innerHeight * 0.2 && top < window.innerHeight * 0.8
+            );
+            
+            persistentImg.style.left = left + 'px';
+            persistentImg.style.top = top + 'px';
+            
+            // Add to body
+            document.body.appendChild(persistentImg);
+            
+            // Note: We don't remove this image - it stays permanently!
+        }
+
+        function createRandomText() {
+            const textElement = document.createElement('div');
+            textElement.className = 'random-text';
+            
+            // Random text from the array
+            const randomText = randomTexts[Math.floor(Math.random() * randomTexts.length)];
+            textElement.textContent = randomText;
+            
+            // Random position on screen
+            textElement.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+            textElement.style.top = Math.random() * (window.innerHeight - 50) + 'px';
+            
+            // Add to body
+            document.body.appendChild(textElement);
+            
+            // Remove after animation
+            setTimeout(() => {
+                if (textElement.parentNode) {
+                    textElement.parentNode.removeChild(textElement);
+                }
+            }, 3000);
+        }
+
+        function handleNo() {
+            const responses = currentPhase === 1 ? phase1Responses : phase2Responses;
+            
+            // If we've exhausted responses and this is phase 2, show persistent images
+            if (currentPhase === 2 && isButtonExhausted) {
+                // Create persistent images that stay on screen
+                createPersistentImage();
+                
+                // Also create some temporary text effects
+                createRandomText();
+                
+                // Move the button randomly after each click
+                const noBtn = document.getElementById('noBtn');
+                noBtn.style.left = Math.random() * 80 + '%';
+                noBtn.style.top = Math.random() * 60 + '%';
+                
+                return; // Don't process further
+            }
+            
+            if (noClickCount < responses.length) {
+                const response = responses[noClickCount];
+                document.getElementById('emoji').textContent = response.emoji;
+                document.getElementById('question').textContent = response.question;
+                document.getElementById('noBtn').textContent = response.text;
+                
+                // Set the specific image for this response
+                if (response.image) {
+                    document.getElementById('catImage').style.backgroundImage = `url("${response.image}")`;
+                }
+                
+                // Special handling for the 8th response in Phase 1
+                if (currentPhase === 1 && noClickCount === 7) {
+                    // Reset everything and start over
+                    setTimeout(() => {
+                        resetToBeginning();
+                    }, 6000);
+                    return;
+                }
+                
+                // Make the No button smaller and move it randomly
+                const noBtn = document.getElementById('noBtn');
+                const scale = Math.max(0.5, 1 - (noClickCount * 0.1));
+                noBtn.style.transform = `scale(${scale})`;
+                
+                // Random movement logic
+                if (noClickCount > 2) {
+                    if (currentPhase === 2 && noClickCount === 6 && moveCount < 3) {
+                        // Phase 2, 7th response: move only 3 times
+                        const x = Math.random() * 100 - 50;
+                        const y = Math.random() * 50 - 25;
+                        noBtn.style.transform += ` translate(${x}px, ${y}px)`;
+                        moveCount++;
+                    } else if (!(currentPhase === 2 && noClickCount === 6)) {
+                        // Other responses: move normally
+                        const x = Math.random() * 100 - 50;
+                        const y = Math.random() * 50 - 25;
+                        noBtn.style.transform += ` translate(${x}px, ${y}px)`;
+                    }
+                }
+                
+                // Make Yes button bigger
+                const yesBtn = document.querySelector('.btn-yes');
+                const yesScale = 1 + (noClickCount * 0.1);
+                yesBtn.style.transform = `scale(${yesScale})`;
+                
+                noClickCount++;
+            }
+            
+            // After exhausting all responses in Phase 2, set up for persistent images
+            if (currentPhase === 2 && noClickCount >= responses.length && !isButtonExhausted) {
+                const noBtn = document.getElementById('noBtn');
+                noBtn.style.position = 'absolute';
+                noBtn.style.left = Math.random() * 80 + '%';
+                noBtn.style.top = Math.random() * 60 + '%';
+                noBtn.style.transform = 'scale(0.3)';
+                noBtn.textContent = 'No!';
+                
+                isButtonExhausted = true; // Set flag so future clicks trigger persistent images
+            }
+            
+            // Add some random effects during phase 2 responses (but not the exhausted state)
+            if (currentPhase === 2 && noClickCount >= 3 && !isButtonExhausted) {
+                // 50% chance to create a floating image/text
+                if (Math.random() > 0.5) {
+                    createFloatingImage();
+                }
+                if (Math.random() > 0.7) {
+                    createRandomText();
+                }
+            }
+        }
+
+        function startPhase2() {
+            currentPhase = 2;
+            noClickCount = 0;
+            moveCount = 0;
+            isButtonExhausted = false; // Reset the exhausted state
+            
+            // Reset button styles
+            const noBtn = document.getElementById('noBtn');
+            const yesBtn = document.querySelector('.btn-yes');
+            noBtn.style.transform = 'scale(1)';
+            noBtn.style.position = 'relative';
+            noBtn.style.left = 'auto';
+            noBtn.style.top = 'auto';
+            yesBtn.style.transform = 'scale(1)';
+            
+            // Set Phase 2 initial state
+            document.getElementById('emoji').textContent = '😸';
+            document.getElementById('question').textContent = 'Will you be my Valentine? 💕';
+            document.getElementById('noBtn').textContent = 'No';
+            
+            // Set initial Phase 2 image - you can set a specific image here
+            document.getElementById('catImage').style.backgroundImage = 'url("images/c1.jpg")';
+        }
+
+        function resetToBeginning() {
+            currentPhase = 1;
+            noClickCount = 0;
+            moveCount = 0;
+            isButtonExhausted = false; // Reset the exhausted state
+            
+            // Reset all styles
+            const noBtn = document.getElementById('noBtn');
+            const yesBtn = document.querySelector('.btn-yes');
+            noBtn.style.transform = 'scale(1)';
+            noBtn.style.position = 'relative';
+            noBtn.style.left = 'auto';
+            noBtn.style.top = 'auto';
+            yesBtn.style.transform = 'scale(1)';
+            
+            // Reset to Phase 1 initial state
+            document.getElementById('emoji').textContent = '😿';
+            document.getElementById('question').textContent = 'Can we still be together and start again? 💔';
+            document.getElementById('noBtn').textContent = 'No';
+            
+            // Reset to initial image
+            setInitialImage();
+        }
+
+        function createHeartRain() {
+            const hearts = document.getElementById('hearts');
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.textContent = ['💖', '💕', '💘', '💝', '💗'][Math.floor(Math.random() * 5)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    hearts.appendChild(heart);
+                    
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 3000);
+                }, i * 100);
+            }
+        }
+
+        // Initialize with initial cat image
+        setInitialImage();
+    </script>
+</body>
+</html>

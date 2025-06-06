@@ -18,6 +18,38 @@
             overflow-x: hidden;
         }
 
+        .audio-notice {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .audio-control {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .audio-control:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 1);
+        }
+
         .container {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
@@ -170,7 +202,6 @@
             to { opacity: 1; }
         }
 
-        /* New styles for random floating images */
         .floating-image {
             position: fixed;
             width: 80px;
@@ -203,7 +234,6 @@
             }
         }
 
-        /* New persistent image styles */
         .persistent-image {
             position: fixed;
             width: 100px;
@@ -260,11 +290,12 @@
 </head>
 <body>
 
-    <audio id="backgroundMusic" loop>
-    <source src="bgm/bumalikkanasakin.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="bgm/bumalikkanasakin.mp3" type="audio/mpeg">
     </audio>
 
+    <div class="audio-notice" id="audioNotice">🎵 Click the play button to enable music!</div>
+    <div class="audio-control" id="audioControl" onclick="toggleAudio()">🔇</div>
 
     <div class="container">
         <div class="hearts" id="hearts"></div>
@@ -285,7 +316,7 @@
         </div>
         
         <div class="success-message" id="successMessage">
-            AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA🎉💕<br>
+            AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA🎉💕<br>
              🥰🥳😍😽😻🫦🫶👅😚🤩😻<br><br>
             <div style="font-size: 20px; color: #ff69b4; margin-top: 15px;">
                 Kita tayo sa June 08, 2025! :D 💕<br>
@@ -295,10 +326,11 @@
     </div>
 
     <script>
-        let currentPhase = 1; // 1 = "Can we be together", 2 = "Will you be my date"
+        let currentPhase = 1;
         let noClickCount = 0;
         let moveCount = 0;
-        let isButtonExhausted = false; // Flag to track when we've exhausted responses
+        let isButtonExhausted = false;
+        let audioPlaying = false;
         
         // Phase 1 responses (Can we be together?) - Add your image paths here
         const phase1Responses = [
@@ -330,8 +362,6 @@
             'images/a4.jpg', 'images/c17.jpg', 'images/a3.jpg', 'images/c18.jpg',
             'images/c19.jpg', 'images/a1.jpg', 'images/c20.jpg'
         ];
-
-        // Array of random pleading texts
         const randomTexts = [
             "Please! 🥺", "Don't go! 😭", "I love you! 💕", "Come back! 🙏",
             "Pretty please! 🥹", "Just one yes! 💖", "Please reconsider! 😿",
@@ -339,32 +369,56 @@
             "Please please! 🤧", "I'm begging! 😰", "Don't say no! 😱"
         ];
 
-        // Set initial image
-        function setInitialImage() {
-            const catImage = document.getElementById('catImage');
-            catImage.style.backgroundImage = 'url("images/c10.jpg")';
+        function toggleAudio() {
+            const audio = document.getElementById('backgroundMusic');
+            const audioControl = document.getElementById('audioControl');
+            const audioNotice = document.getElementById('audioNotice');
+            
+            if (audioPlaying) {
+                audio.pause();
+                audioControl.textContent = '🔇';
+                audioControl.title = 'Play music';
+                audioPlaying = false;
+                audioNotice.textContent = '🎵 Click to play romantic music!';
+            } else {
+                audio.play().then(() => {
+                    audioControl.textContent = '🔊';
+                    audioControl.title = 'Pause music';
+                    audioPlaying = true;
+                    audioNotice.textContent = '🎵 Music playing!';
+                    setTimeout(() => {
+                        audioNotice.style.display = 'none';
+                    }, 3000);
+                }).catch(error => {
+                    console.log('Audio play failed:', error);
+                    audioNotice.textContent = '❌ Audio file not found!';
+                });
+            }
         }
 
         function handleYes() {
+            // Start music on first interaction if not playing
+            if (!audioPlaying) {
+                toggleAudio();
+            }
+            
             if (currentPhase === 1) {
-                // Transition to Phase 2
                 document.getElementById('phaseTransition').style.display = 'block';
                 setTimeout(() => {
                     document.getElementById('phaseTransition').style.display = 'none';
                     startPhase2();
                 }, 6000);
             } else if (currentPhase === 2) {
-                // Final success
                 document.getElementById('buttons').style.display = 'none';
                 document.getElementById('successMessage').style.display = 'block';
                 document.getElementById('emoji').textContent = '😻';
                 document.getElementById('question').textContent = 'YESYESYESYESAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
                 
-                createHeartRain();
-                
                 // Change to happy cat - replace with your happy cat image
                 const catImage = document.getElementById('catImage');
                 catImage.style.backgroundImage = 'url("images/a7.jpg")';
+                
+                createHeartRain();
             }
         }
 
@@ -376,14 +430,11 @@
             const randomImage = randomImages[Math.floor(Math.random() * randomImages.length)];
             floatingImg.style.backgroundImage = `url("${randomImage}")`;
             
-            // Random position on screen
             floatingImg.style.left = Math.random() * (window.innerWidth - 80) + 'px';
             floatingImg.style.top = Math.random() * (window.innerHeight - 80) + 'px';
             
-            // Add to body
             document.body.appendChild(floatingImg);
             
-            // Remove after animation
             setTimeout(() => {
                 if (floatingImg.parentNode) {
                     floatingImg.parentNode.removeChild(floatingImg);
@@ -399,7 +450,6 @@
             const randomImage = randomImages[Math.floor(Math.random() * randomImages.length)];
             persistentImg.style.backgroundImage = `url("${randomImage}")`;
             
-            // Random position on screen (but avoid the center area where the main container is)
             let left, top;
             do {
                 left = Math.random() * (window.innerWidth - 100);
@@ -412,28 +462,19 @@
             persistentImg.style.left = left + 'px';
             persistentImg.style.top = top + 'px';
             
-            // Add to body
             document.body.appendChild(persistentImg);
-            
-            // Note: We don't remove this image - it stays permanently!
         }
 
         function createRandomText() {
             const textElement = document.createElement('div');
             textElement.className = 'random-text';
+            textElement.textContent = randomTexts[Math.floor(Math.random() * randomTexts.length)];
             
-            // Random text from the array
-            const randomText = randomTexts[Math.floor(Math.random() * randomTexts.length)];
-            textElement.textContent = randomText;
-            
-            // Random position on screen
             textElement.style.left = Math.random() * (window.innerWidth - 200) + 'px';
             textElement.style.top = Math.random() * (window.innerHeight - 50) + 'px';
             
-            // Add to body
             document.body.appendChild(textElement);
             
-            // Remove after animation
             setTimeout(() => {
                 if (textElement.parentNode) {
                     textElement.parentNode.removeChild(textElement);
@@ -442,22 +483,22 @@
         }
 
         function handleNo() {
+            // Start music on first interaction if not playing
+            if (!audioPlaying) {
+                toggleAudio();
+            }
+            
             const responses = currentPhase === 1 ? phase1Responses : phase2Responses;
             
-            // If we've exhausted responses and this is phase 2, show persistent images
             if (currentPhase === 2 && isButtonExhausted) {
-                // Create persistent images that stay on screen
                 createPersistentImage();
-                
-                // Also create some temporary text effects
                 createRandomText();
                 
-                // Move the button randomly after each click
                 const noBtn = document.getElementById('noBtn');
                 noBtn.style.left = Math.random() * 80 + '%';
                 noBtn.style.top = Math.random() * 60 + '%';
                 
-                return; // Don't process further
+                return;
             }
             
             if (noClickCount < responses.length) {
@@ -471,37 +512,30 @@
                     document.getElementById('catImage').style.backgroundImage = `url("${response.image}")`;
                 }
                 
-                // Special handling for the 8th response in Phase 1
                 if (currentPhase === 1 && noClickCount === 7) {
-                    // Reset everything and start over
                     setTimeout(() => {
                         resetToBeginning();
                     }, 6000);
                     return;
                 }
                 
-                // Make the No button smaller and move it randomly
                 const noBtn = document.getElementById('noBtn');
                 const scale = Math.max(0.5, 1 - (noClickCount * 0.1));
                 noBtn.style.transform = `scale(${scale})`;
                 
-                // Random movement logic
                 if (noClickCount > 2) {
                     if (currentPhase === 2 && noClickCount === 6 && moveCount < 3) {
-                        // Phase 2, 7th response: move only 3 times
                         const x = Math.random() * 100 - 50;
                         const y = Math.random() * 50 - 25;
                         noBtn.style.transform += ` translate(${x}px, ${y}px)`;
                         moveCount++;
                     } else if (!(currentPhase === 2 && noClickCount === 6)) {
-                        // Other responses: move normally
                         const x = Math.random() * 100 - 50;
                         const y = Math.random() * 50 - 25;
                         noBtn.style.transform += ` translate(${x}px, ${y}px)`;
                     }
                 }
                 
-                // Make Yes button bigger
                 const yesBtn = document.querySelector('.btn-yes');
                 const yesScale = 1 + (noClickCount * 0.1);
                 yesBtn.style.transform = `scale(${yesScale})`;
@@ -509,7 +543,6 @@
                 noClickCount++;
             }
             
-            // After exhausting all responses in Phase 2, set up for persistent images
             if (currentPhase === 2 && noClickCount >= responses.length && !isButtonExhausted) {
                 const noBtn = document.getElementById('noBtn');
                 noBtn.style.position = 'absolute';
@@ -518,12 +551,10 @@
                 noBtn.style.transform = 'scale(0.3)';
                 noBtn.textContent = 'No!';
                 
-                isButtonExhausted = true; // Set flag so future clicks trigger persistent images
+                isButtonExhausted = true;
             }
             
-            // Add some random effects during phase 2 responses (but not the exhausted state)
             if (currentPhase === 2 && noClickCount >= 3 && !isButtonExhausted) {
-                // 50% chance to create a floating image/text
                 if (Math.random() > 0.5) {
                     createFloatingImage();
                 }
@@ -537,9 +568,8 @@
             currentPhase = 2;
             noClickCount = 0;
             moveCount = 0;
-            isButtonExhausted = false; // Reset the exhausted state
+            isButtonExhausted = false;
             
-            // Reset button styles
             const noBtn = document.getElementById('noBtn');
             const yesBtn = document.querySelector('.btn-yes');
             noBtn.style.transform = 'scale(1)';
@@ -548,9 +578,8 @@
             noBtn.style.top = 'auto';
             yesBtn.style.transform = 'scale(1)';
             
-            // Set Phase 2 initial state
             document.getElementById('emoji').textContent = '😸';
-            document.getElementById('question').textContent = 'Will you be my Valentine? 💕';
+            document.getElementById('question').textContent = 'Will you be my Date? 💕';
             document.getElementById('noBtn').textContent = 'No';
             
             // Set initial Phase 2 image - you can set a specific image here
@@ -561,9 +590,8 @@
             currentPhase = 1;
             noClickCount = 0;
             moveCount = 0;
-            isButtonExhausted = false; // Reset the exhausted state
+            isButtonExhausted = false;
             
-            // Reset all styles
             const noBtn = document.getElementById('noBtn');
             const yesBtn = document.querySelector('.btn-yes');
             noBtn.style.transform = 'scale(1)';
@@ -572,7 +600,6 @@
             noBtn.style.top = 'auto';
             yesBtn.style.transform = 'scale(1)';
             
-            // Reset to Phase 1 initial state
             document.getElementById('emoji').textContent = '😿';
             document.getElementById('question').textContent = 'Can we still be together and start again? 💔';
             document.getElementById('noBtn').textContent = 'No';
@@ -598,6 +625,20 @@
                 }, i * 100);
             }
         }
+
+        // Set initial image
+        function setInitialImage() {
+            const catImage = document.getElementById('catImage');
+            catImage.style.backgroundImage = 'url("images/c10.jpg")';
+        }
+
+        // Auto-hide audio notice after 5 seconds
+        setTimeout(() => {
+            const audioNotice = document.getElementById('audioNotice');
+            if (audioNotice && !audioPlaying) {
+                audioNotice.style.opacity = '0.7';
+            }
+        }, 5000);
 
         // Initialize with initial cat image
         setInitialImage();
